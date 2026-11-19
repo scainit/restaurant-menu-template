@@ -163,11 +163,14 @@ async function handle(req, res) {
       const [categories, products, images, settings] = await Promise.all([
         listRows(tables.categories), listRows(tables.products), listRows(tables.images), listRows(tables.settings)
       ]);
+      const categoryItems = categories.map(r => { const d = r.data || r; return { id: r.$id, ...d }; }).filter(x => x.active !== false);
+      const productItems = products.map(r => { const d = r.data || r; return { id: r.$id, ...d, sizes: parseJson(d.sizes, []) }; }).filter(x => x.available !== false);
+      const imageItems = images.map(r => { const d = r.data || r; return { id: r.$id, ...d }; }).filter(x => x.active !== false);
       return json(res, {
-        categories: categories.map(r => ({ id: r.$id, ...r.data })).filter(x => x.active !== false),
-        products: products.map(r => ({ id: r.$id, ...r.data, sizes: parseJson(r.data.sizes, []) })).filter(x => x.available !== false),
-        images: images.map(r => ({ id: r.$id, ...r.data })).filter(x => x.active !== false),
-        settings: settings[0]?.data || null
+        categories: categoryItems,
+        products: productItems,
+        images: imageItems,
+        settings: settings[0] ? (settings[0].data || settings[0]) : null
       }, 200, origin);
     }
     if (action.startsWith("admin.")) {
