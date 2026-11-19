@@ -117,6 +117,7 @@ export async function api(path: string, options: RequestInit = {}) {
     const d = await callMenuApi("admin.staff.create", { username: body.username, displayName: body.display_name, password: body.password, role: body.role });
     return { user: mapUser(d.user) };
   }
+  if (path.startsWith("/api/admin/users/") && method === "DELETE") return callMenuApi("admin.staff.delete", { id: path.split("/").pop() });
   if (path.startsWith("/api/admin/users/") && method === "PATCH") {
     const id = path.split("/").pop() || "";
     const patch: any = { id };
