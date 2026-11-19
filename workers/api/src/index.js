@@ -36,7 +36,7 @@ function cors(request) {
   return {
     "access-control-allow-origin": allowed ? origin : "null",
     "access-control-allow-credentials": "true",
-    "access-control-allow-methods": "GET,POST,PUT,DELETE,OPTIONS",
+    "access-control-allow-methods": "GET,POST,PUT,PATCH,DELETE,OPTIONS",
     "access-control-allow-headers": "Content-Type, X-Bootstrap-Secret",
     "vary": "Origin"
   };
@@ -61,7 +61,7 @@ export default {
   const path = url.pathname;
   const origin = request.headers.get("Origin") || "";
   const allowedOrigin = origin === "https://restaurant-menu-site.scan-it500.workers.dev" || origin === "https://restaurant-menu-template.pages.dev" || origin.startsWith("http://localhost:");
-  if (["POST", "PUT", "DELETE"].includes(request.method) && !allowedOrigin) return json({ error: "Origin not allowed" }, 403, headers);
+  if (["POST", "PUT", "PATCH", "DELETE"].includes(request.method) && !allowedOrigin) return json({ error: "Origin not allowed" }, 403, headers);
   try {
    if (path === "/health") return json({ ok: true, service: "restaurant-menu-api" }, 200, headers);
    if (path === "/api/menu" && request.method === "GET") {
