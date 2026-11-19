@@ -24,3 +24,9 @@
 .admin-product{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 0;border-top:1px solid var(--line)}
 .admin-product small{display:block;color:var(--muted);margin-top:5px}
 @media(max-width:720px){.admin-shell{padding:28px 14px 70px}.admin-grid{grid-template-columns:1fr}.admin-top{align-items:flex-start;gap:12px}.admin-product{align-items:flex-start;flex-direction:column}}
+
+.admin-success{background:#edf8f0;color:#21643a;border:1px solid #c8e8d0;padding:12px 14px;border-radius:10px}
+.staff-user-row{list-style:none;margin:0 0 12px;padding:14px 0;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:14px}
+.staff-user-row small{display:block;color:var(--muted);margin-top:5px}
+.staff-user-row .admin-actions{flex-wrap:wrap;justify-content:flex-end}
+@media(max-width:720px){.staff-user-row{align-items:flex-start;flex-direction:column}.staff-user-row .admin-actions{justify-content:flex-start}}
