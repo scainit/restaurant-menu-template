@@ -95,6 +95,19 @@ export default function StaffManagementPage() {
     }
   }
 
+  async function deleteUser(user: StaffUser) {
+    if (!window.confirm("Permanently delete " + user.username + "? This cannot be undone.")) return;
+    setError("");
+    setNotice("");
+    try {
+      await api("/api/admin/users/" + user.id, { method: "DELETE" });
+      setNotice("Staff account deleted.");
+      await loadUsers();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not delete account");
+    }
+  }
+
   function resetPassword(user: StaffUser) {
     setResetTarget(user.id);
     setResetPasswordValue("");
@@ -154,6 +167,7 @@ export default function StaffManagementPage() {
               <button type="button" className="admin-secondary" onClick={()=>resetPassword(user)}>Reset password</button>
               <button type="button" className="admin-secondary" onClick={()=>changeRole(user)}>{user.role==="manager"?"Make staff":"Make manager"}</button>
               <button type="button" className={user.is_active?"admin-danger":"admin-primary"} onClick={()=>toggleActive(user)}>{user.is_active?"Disable":"Enable"}</button>
+              <button type="button" className="admin-danger" onClick={()=>deleteUser(user)}>Delete</button>
             </div>
           </li>)}
         </ul>
