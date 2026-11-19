@@ -31,7 +31,7 @@ function cookie(request, name) {
 }
 function cors(request) {
   const origin = request.headers.get("Origin") || "";
-  const allowed = origin === "https://restaurant-menu-template.pages.dev" || origin.startsWith("http://localhost:");
+  const allowed = origin === "https://restaurant-menu-site.scan-it500.workers.dev" || origin === "https://restaurant-menu-template.pages.dev" || origin.startsWith("http://localhost:");
   return {
     "access-control-allow-origin": allowed ? origin : "null",
     "access-control-allow-credentials": "true",
