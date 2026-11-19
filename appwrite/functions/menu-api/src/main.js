@@ -114,7 +114,7 @@ async function requireManager(req) {
 async function handle(req, res) {
   const origin = req.headers?.origin || req.headers?.Origin || "";
   if (req.method === "OPTIONS") return json(res, {}, 204, origin);
-  if (!endpoint || !projectId || !apiKey || !sessionSecret) return json(res, { error: "Appwrite function environment is incomplete." }, 500, origin);
+  if (!endpoint || !projectId || !apiKey || !sessionSecret) return json(res, { error: "Appwrite function environment is incomplete.", missing: { endpoint: !!endpoint, projectId: !!projectId, apiKey: !!apiKey, sessionSecret: !!sessionSecret, bootstrapSecret: !!bootstrapSecret, functionKeyAlt: !!process.env.APPWRITE_FUNCTION_KEY, endpointAlt: !!process.env.APPWRITE_ENDPOINT } }, 500, origin);
   const input = req.bodyJson || (() => { try { return JSON.parse(req.body || "{}"); } catch { return {}; } })();
   const action = String(input.action || "");
   try {
