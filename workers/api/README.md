@@ -1,0 +1,1 @@
+# Restaurant Menu API\n\nCloudflare Worker API backed by D1. Routes include public menu reads, username/password login, secure HttpOnly sessions, password change, and authenticated category/product CRUD. Bind the D1 database as `DB`. R2 image upload will be enabled after the account's R2 service is activated.\n
