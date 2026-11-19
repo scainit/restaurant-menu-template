@@ -94,6 +94,7 @@ export default {
     return json({ user: { username: user.username, role: user.role }, mustChangePassword: !!user.must_change_password }, 200, headers);
    }
    if (!user) return json({ error: "Unauthorized" }, 401, headers);
+   if (user.must_change_password && path !== "/api/auth/change-password") return json({ error: "Password change required" }, 403, headers);
    if (path === "/api/auth/change-password" && request.method === "POST") {
     const body = await request.json(); const password = String(body.password || "");
     if (password.length < 12 || password.length > 128) return json({ error: "Password must be 12-128 characters" }, 400, headers);
