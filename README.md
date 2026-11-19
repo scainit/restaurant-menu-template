@@ -1,15 +1,26 @@
 # Restaurant Menu Template
 
-Reusable, mobile-first restaurant website starter. Each restaurant will have its own deployment and data.
+Reusable, mobile-first restaurant website starter. Each restaurant should receive its own deployment, database, storage bucket, and staff credentials.
 
-## Included in the first frontend phase
-- Restaurant landing page with contact, location, review, social and InstaPay links (configured in `src/lib/config.ts`).
-- Menu categories and product cards.
-- Fixed-price products and products with size options.
-- Cart, quantity changes, remove items and total.
-- WhatsApp checkout message with item, size, quantity and total.
-- English/Arabic toggle with RTL layout.
-- Unavailable products are hidden using the `available` field.
+## Current implementation
+- Customer landing page with contact, location, review, social and InstaPay links configured in `src/lib/config.ts`.
+- Arabic/English menu with RTL support.
+- Product categories, fixed prices, and size-based prices.
+- Cart with quantity changes, remove items, total, and WhatsApp checkout.
+- Cart persistence in browser local storage.
+- Customer menu reads from the Cloudflare API, with local sample fallback.
+- Staff sign-in at `/admin` using a username (not email).
+- First-login password replacement.
+- D1-backed admin CRUD for categories and products.
+- PBKDF2-SHA256 password hashing and hashed, expiring session tokens.
+- API Worker source in `workers/api/src/index.js`.
+- D1 schema in `migrations/0001_initial.sql`.
+
+## Current Cloudflare resources
+- D1 database: `restaurant-menu-template-db`
+- API Worker: `restaurant-menu-api`
+- API URL: `https://restaurant-menu-api.scan-it500.workers.dev`
+- Frontend Pages project: `restaurant-menu-template`
 
 ## Run locally
 ```bash
@@ -18,13 +29,15 @@ npm run dev
 ```
 Open http://localhost:3000.
 
-## Customize
-Edit `src/lib/config.ts` for restaurant identity and links. Edit `src/lib/menu.ts` for sample menu data.
+## Customize a restaurant
+Edit `src/lib/config.ts` for the restaurant name, logo, colors, WhatsApp number, phone, address, maps, reviews, socials and InstaPay link. Replace the sample menu records in D1 for a real restaurant. Each customer deployment must use its own database and its own restaurant identifier/configuration.
 
-## Next implementation phases
-1. Persist cart between refreshes.
-2. Employee login and protected admin dashboard (products, categories, menu settings).
-3. Cloudflare D1 persistence and Cloudflare R2 image uploads.
-4. Secure API authorization, rate limiting and deployment configuration.
+## Pending before production use
+- Activate R2 on the Cloudflare account, then create and bind the image bucket. Image upload is not active yet.
+- Complete the first frontend build/deployment and verify the live Pages URL.
+- Verify login, password change, session cookies, CRUD and browser CORS against the deployed frontend.
+- Add persistent login rate limiting and CSRF/origin enforcement before exposing staff login publicly.
+- Add size-option editing and category visibility/reordering controls in the dashboard.
+- Generate a restaurant QR code after the final customer URL is confirmed.
 
-**Important:** This commit is the frontend starter only. Authentication, admin CRUD, database persistence, secure API routes and R2 uploads are not implemented yet. Do not use it for real restaurant operations until those phases are complete.
+Do not treat the site as production-ready until the pending checks above are complete. Never commit real passwords, API tokens, or customer secrets.
