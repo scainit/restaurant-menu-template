@@ -34,3 +34,15 @@
 .staff-reset-form{display:grid;grid-template-columns:minmax(180px,1fr) auto auto;gap:8px;align-items:end;margin-top:12px}
 .staff-reset-form label{margin:0;min-width:0}
 @media(max-width:720px){.staff-reset-form{grid-template-columns:1fr}.staff-reset-form button{width:100%}}
+
+/* Blue staff administration theme */
+.staff-admin-theme{--staff-blue:#1769d2;--staff-blue-dark:#1053ad;--staff-blue-soft:#eaf3ff;--staff-line:#d7e6fa}
+.staff-admin-theme .eyebrow{color:var(--staff-blue)}
+.staff-admin-theme .admin-panel{border-color:var(--staff-line);box-shadow:0 10px 30px #1769d20d}
+.staff-admin-theme .admin-primary{background:var(--staff-blue);color:#fff}
+.staff-admin-theme .admin-primary:hover{background:var(--staff-blue-dark)}
+.staff-admin-theme .admin-secondary{background:var(--staff-blue-soft);color:#174f96}
+.staff-admin-theme .admin-panel input:focus,.staff-admin-theme .admin-panel select:focus{outline:2px solid #8dbdff;border-color:var(--staff-blue)}
+.staff-admin-theme .staff-user-row{border-color:var(--staff-line)}
+.staff-admin-theme .admin-success{background:#eaf3ff;color:#174f96;border-color:#c8ddfb}
+.staff-admin-theme .admin-top h1{color:#123c70}
