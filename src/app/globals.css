@@ -30,3 +30,7 @@
 .staff-user-row small{display:block;color:var(--muted);margin-top:5px}
 .staff-user-row .admin-actions{flex-wrap:wrap;justify-content:flex-end}
 @media(max-width:720px){.staff-user-row{align-items:flex-start;flex-direction:column}.staff-user-row .admin-actions{justify-content:flex-start}}
+
+.staff-reset-form{display:grid;grid-template-columns:minmax(180px,1fr) auto auto;gap:8px;align-items:end;margin-top:12px}
+.staff-reset-form label{margin:0;min-width:0}
+@media(max-width:720px){.staff-reset-form{grid-template-columns:1fr}.staff-reset-form button{width:100%}}
