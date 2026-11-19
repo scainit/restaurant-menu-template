@@ -2,7 +2,7 @@ import { createHmac, randomBytes, scryptSync, timingSafeEqual } from "node:crypt
 
 const endpoint = process.env.APPWRITE_FUNCTION_API_ENDPOINT;
 const projectId = process.env.APPWRITE_FUNCTION_PROJECT_ID;
-const apiKey = process.env.APPWRITE_FUNCTION_API_KEY;
+const apiKey = process.env.MENU_API_KEY || process.env.APPWRITE_FUNCTION_API_KEY;
 const sessionSecret = process.env.MENU_SESSION_SECRET;
 const bootstrapSecret = process.env.MENU_BOOTSTRAP_SECRET;
 const db = "menu-db";
