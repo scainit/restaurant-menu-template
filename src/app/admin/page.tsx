@@ -1,16 +1,9 @@
 "use client";
 import { FormEvent, useEffect, useState } from "react";
-import { restaurant } from "@/lib/config";
+import { api } from "@/lib/appwrite";
 
 type Category = { id: string; name: string; name_ar: string; sort_order: number; is_visible: number };
 type Product = { id: string; category_id: string; name: string; name_ar: string; description: string; description_ar: string; price: number | null; sizes: {id:string;name:string;nameAr:string;price:number}[]; is_available: boolean; sort_order: number };
-const API = restaurant.apiBaseUrl;
-async function api(path: string, options: RequestInit = {}) {
-  const response = await fetch(API + path, { ...options, credentials: "include", headers: { "content-type": "application/json", ...(options.headers || {}) } });
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(data.error || "Something went wrong");
-  return data;
-}
 export default function AdminPage() {
   const [loggedIn,setLoggedIn]=useState(false),[loading,setLoading]=useState(true),[error,setError]=useState(""),[username,setUsername]=useState(""),[password,setPassword]=useState(""),[showPassword,setShowPassword]=useState(false),[mustChange,setMustChange]=useState(false),[newPassword,setNewPassword]=useState(""),[showNewPassword,setShowNewPassword]=useState(false),[role,setRole]=useState("staff");
   const [categories,setCategories]=useState<Category[]>([]),[products,setProducts]=useState<Product[]>([]);
