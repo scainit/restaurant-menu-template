@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 360" role="img" aria-label="Popular menu illustration 6">
+ <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f4d9a0"/><stop offset="1" stop-color="#e9a23b" stop-opacity=".35"/></linearGradient><filter id="s"><feGaussianBlur stdDeviation="9"/></filter></defs>
+ <rect width="400" height="360" rx="34" fill="url(#g)"/><circle cx="200" cy="185" r="140" fill="#fff" opacity=".18"/><ellipse cx="200" cy="305" rx="120" ry="16" fill="#5a4938" opacity=".15" filter="url(#s)"/>
+ <ellipse cx="200" cy="220" rx="115" ry="68" fill="#fff" opacity=".95"/><path d="M95 190 Q105 110 200 110 Q295 110 305 190 L290 230 Q200 280 110 230 Z" fill="#c85a35"/><path d="M110 185 Q200 155 290 185" stroke="#f5d88d" stroke-width="18" fill="none"/><path d="M112 207 Q200 235 288 207" stroke="#6d9a4b" stroke-width="15" fill="none"/><path d="M125 160 Q200 125 275 160" stroke="#f4e2b7" stroke-width="22" fill="none"/><circle cx="165" cy="174" r="9" fill="#b84c36"/><circle cx="225" cy="180" r="9" fill="#b84c36"/>
+ <circle cx="62" cy="62" r="8" fill="#c85a35" opacity=".65"/><circle cx="335" cy="290" r="12" fill="#e9a23b" opacity=".55"/>
+ <text x="200" y="338" text-anchor="middle" font-family="Arial,sans-serif" font-size="13" font-weight="700" fill="#54473d" opacity=".7">POPULAR · 06</text></svg>
