@@ -1,7 +1,7 @@
 "use client";
 import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
-import { restaurant } from "@/lib/config";
+import { api } from "@/lib/appwrite";
 
 type StaffUser = {
   id: string;
@@ -13,17 +13,6 @@ type StaffUser = {
   created_at: string;
 };
 
-const API = restaurant.apiBaseUrl;
-async function api(path: string, options: RequestInit = {}) {
-  const response = await fetch(API + path, {
-    ...options,
-    credentials: "include",
-    headers: { "content-type": "application/json", ...(options.headers || {}) }
-  });
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(data.error || "Something went wrong");
-  return data;
-}
 
 export default function StaffManagementPage() {
   const [users, setUsers] = useState<StaffUser[]>([]);
