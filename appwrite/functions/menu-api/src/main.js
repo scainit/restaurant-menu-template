@@ -81,17 +81,24 @@ async function dbRequest(path, method = "GET", body) {
 function rowPath(table, id = "") {
   return "/tablesdb/" + db + "/tables/" + table + "/rows" + (id ? "/" + encodeURIComponent(id) : "");
 }
+function normalizeRow(row) {
+  if (!row || typeof row !== "object") return row;
+  if (row.data && typeof row.data === "object") return row;
+  const data = Object.fromEntries(Object.entries(row).filter(([key]) => !key.startsWith("$")));
+  return { ...row, data };
+}
 async function listRows(table, query = null) {
   const params = new URLSearchParams();
   params.append("queries[]", JSON.stringify({ method: "limit", values: [100] }));
   if (query) params.append("queries[]", JSON.stringify(query));
-  return (await dbRequest(rowPath(table) + "?" + params.toString())).rows || [];
+  const result = await dbRequest(rowPath(table) + "?" + params.toString());
+  return (result.rows || []).map(normalizeRow);
 }
-async function getRow(table, id) { return dbRequest(rowPath(table, id)); }
+async function getRow(table, id) { return normalizeRow(await dbRequest(rowPath(table, id))); }
 async function createRow(table, data, id = randomId()) {
-  return dbRequest(rowPath(table), "POST", { rowId: id, data });
+  return normalizeRow(await dbRequest(rowPath(table), "POST", { rowId: id, data }));
 }
-async function updateRow(table, id, data) { return dbRequest(rowPath(table, id), "PATCH", { data }); }
+async function updateRow(table, id, data) { return normalizeRow(await dbRequest(rowPath(table, id), "PATCH", { data })); }
 async function deleteRow(table, id) { return dbRequest(rowPath(table, id), "DELETE"); }
 function cleanProfile(row) {
   const d = row.data || {};
