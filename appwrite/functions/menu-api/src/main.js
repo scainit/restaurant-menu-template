@@ -83,8 +83,8 @@ function rowPath(table, id = "") {
 }
 async function listRows(table, query = null) {
   const params = new URLSearchParams();
-  params.set("queries", JSON.stringify({ method: "limit", values: [100] }));
-  if (query) params.append("queries", JSON.stringify(query));
+  params.append("queries[]", JSON.stringify({ method: "limit", values: [100] }));
+  if (query) params.append("queries[]", JSON.stringify(query));
   return (await dbRequest(rowPath(table) + "?" + params.toString())).rows || [];
 }
 async function getRow(table, id) { return dbRequest(rowPath(table, id)); }
