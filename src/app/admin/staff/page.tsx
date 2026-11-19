@@ -136,7 +136,7 @@ export default function StaffManagementPage() {
     }
   }
 
-  if (loading) return <main className="admin-shell"><p>Loading staff management…</p></main>;
+  if (loading) return <main className="admin-shell staff-admin-theme"><p>Loading staff management…</p></main>;
   if (!allowed) return <main className="admin-shell"><section className="admin-panel admin-login"><h1>Manager access required</h1><p>Sign in with an active manager account to manage staff.</p><Link href="/admin">Return to staff sign in</Link></section></main>;
 
   return <main className="admin-shell">
