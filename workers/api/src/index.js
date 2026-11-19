@@ -5,6 +5,19 @@ const json = (data, status = 200, headers = {}) => new Response(JSON.stringify(d
 const bytesToHex = (bytes) => Array.from(new Uint8Array(bytes), b => b.toString(16).padStart(2, "0")).join("");
 const hexToBytes = (hex) => new Uint8Array((hex.match(/.{1,2}/g) || []).map(x => parseInt(x, 16)));
 async function sha256(value) { return bytesToHex(await crypto.subtle.digest("SHA-256", encoder.encode(value))); }
+async function checkLoginLimit(env, ipHash) {
+  const row = await env.DB.prepare("SELECT attempts,window_started,blocked_until FROM login_attempts WHERE ip_hash=?").bind(ipHash).first();
+  const now = Date.now();
+  if (row?.blocked_until && Date.parse(row.blocked_until) > now) return false;
+  if (!row || now - Date.parse(row.window_started) > 15 * 60 * 1000) {
+    await env.DB.prepare("INSERT INTO login_attempts(ip_hash,attempts,window_started,blocked_until) VALUES(?,0,?,NULL) ON CONFLICT(ip_hash) DO UPDATE SET attempts=0,window_started=excluded.window_started,blocked_until=NULL").bind(ipHash,new Date(now).toISOString()).run();
+  }
+  return true;
+}
+async function recordLoginFailure(env, ipHash) {
+  const now = new Date().toISOString();
+  await env.DB.prepare("INSERT INTO login_attempts(ip_hash,attempts,window_started) VALUES(?,1,?) ON CONFLICT(ip_hash) DO UPDATE SET attempts=attempts+1,blocked_until=CASE WHEN attempts+1>=10 THEN ? ELSE blocked_until END").bind(ipHash,now,new Date(Date.now()+15*60*1000).toISOString()).run();
+}
 async function passwordHash(password, saltHex, iterations) {
   const key = await crypto.subtle.importKey("raw", encoder.encode(password), "PBKDF2", false, ["deriveBits"]);
   const bits = await crypto.subtle.deriveBits({ name: "PBKDF2", salt: hexToBytes(saltHex), iterations, hash: "SHA-256" }, key, 256);
@@ -18,7 +31,7 @@ function cookie(request, name) {
 }
 function cors(request) {
   const origin = request.headers.get("Origin") || "";
-  const allowed = origin.startsWith("http://localhost:") || origin.endsWith(".workers.dev") || origin.endsWith(".pages.dev");
+  const allowed = origin === "https://restaurant-menu-template.pages.dev" || origin.startsWith("http://localhost:");
   return {
     "access-control-allow-origin": allowed ? origin : "null",
     "access-control-allow-credentials": "true",
@@ -53,13 +66,17 @@ export default {
    }
    if (path === "/api/auth/login" && request.method === "POST") {
     const body = await request.json();
+    const ip = request.headers.get("CF-Connecting-IP") || "unknown";
+    const ipHash = await sha256(ip);
+    if (!(await checkLoginLimit(env, ipHash))) return json({ error: "Too many attempts. Try again in 15 minutes." }, 429, headers);
     const username = String(body.username || "").trim().toLowerCase();
     const password = String(body.password || "");
     if (!username || !password || username.length > 64 || password.length > 256) return json({ error: "Invalid username or password" }, 400, headers);
     const user = await env.DB.prepare("SELECT * FROM admin_users WHERE restaurant_id=? AND username=? AND is_active=1 LIMIT 1").bind(RESTAURANT_ID, username).first();
-    if (!user) { await passwordHash(password, "00000000000000000000000000000000", 1000); return json({ error: "Invalid username or password" }, 401, headers); }
+    if (!user) { await passwordHash(password, "00000000000000000000000000000000", 1000); await recordLoginFailure(env, ipHash); return json({ error: "Invalid username or password" }, 401, headers); }
     const candidate = await passwordHash(password, user.password_salt, user.password_iterations);
-    if (candidate !== user.password_hash) return json({ error: "Invalid username or password" }, 401, headers);
+    if (candidate !== user.password_hash) { await recordLoginFailure(env, ipHash); return json({ error: "Invalid username or password" }, 401, headers); }
+    await env.DB.prepare("DELETE FROM login_attempts WHERE ip_hash=?").bind(ipHash).run();
     const token = randomHex(32);
     const tokenHash = await sha256(token);
     const expires = new Date(Date.now() + SESSION_DAYS * 86400000).toISOString();
