@@ -34,9 +34,11 @@ export default function StaffManagementPage() {
   const [displayName, setDisplayName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [role, setRole] = useState<"manager" | "staff">("staff");
   const [resetTarget, setResetTarget] = useState<string | null>(null);
   const [resetPasswordValue, setResetPasswordValue] = useState("");
+  const [showResetPassword, setShowResetPassword] = useState(false);
 
   async function loadUsers() {
     const me = await api("/api/auth/me");
@@ -149,7 +151,7 @@ export default function StaffManagementPage() {
         <h2>Add staff account</h2>
         <label>Employee name<input value={displayName} onChange={e=>setDisplayName(e.target.value)} maxLength={100} required /></label>
         <label>Username<input value={username} onChange={e=>setUsername(e.target.value)} minLength={3} maxLength={64} pattern="[A-Za-z0-9._-]+" autoComplete="off" required /></label>
-        <label>Temporary password<input type="password" value={password} onChange={e=>setPassword(e.target.value)} minLength={12} maxLength={128} autoComplete="new-password" required /></label>
+        <label>Temporary password<div style={{display:"flex",gap:8,alignItems:"center"}}><input style={{flex:1,minWidth:0}} type={showPassword?"text":"password"} value={password} onChange={e=>setPassword(e.target.value)} minLength={12} maxLength={128} autoComplete="new-password" required /><button type="button" className="admin-secondary" onClick={()=>setShowPassword(v=>!v)} aria-label={showPassword?"Hide password":"Show password"}>{showPassword?"Hide":"Show"}</button></div></label>
         <label>Role<select value={role} onChange={e=>setRole(e.target.value as "manager"|"staff")}><option value="staff">Staff – read-only</option><option value="manager">Manager – full access</option></select></label>
         <button className="admin-primary">Create account</button>
         <small>New accounts must replace their temporary password at first sign-in.</small>
@@ -158,7 +160,7 @@ export default function StaffManagementPage() {
         <h2>Staff accounts ({users.length})</h2>
         <ul className="admin-list">
           {users.map(user=><li key={user.id} className="staff-user-row">
-            <div><b>{user.display_name || user.username}</b><small>@{user.username} · {user.role} · {user.is_active ? "Active" : "Disabled"}{user.must_change_password ? " · Password change required" : ""}</small>{resetTarget===user.id&&<form className="staff-reset-form" onSubmit={submitPasswordReset}><label>New temporary password<input type="password" value={resetPasswordValue} onChange={e=>setResetPasswordValue(e.target.value)} minLength={12} maxLength={128} autoComplete="new-password" required /></label><button className="admin-primary">Save password</button><button type="button" className="admin-secondary" onClick={()=>setResetTarget(null)}>Cancel</button></form>}</div>
+            <div><b>{user.display_name || user.username}</b><small>@{user.username} · {user.role} · {user.is_active ? "Active" : "Disabled"}{user.must_change_password ? " · Password change required" : ""}</small>{resetTarget===user.id&&<form className="staff-reset-form" onSubmit={submitPasswordReset}><label>New temporary password<div style={{display:"flex",gap:8,alignItems:"center"}}><input style={{flex:1,minWidth:0}} type={showResetPassword?"text":"password"} value={resetPasswordValue} onChange={e=>setResetPasswordValue(e.target.value)} minLength={12} maxLength={128} autoComplete="new-password" required /><button type="button" className="admin-secondary" onClick={()=>setShowResetPassword(v=>!v)} aria-label={showResetPassword?"Hide password":"Show password"}>{showResetPassword?"Hide":"Show"}</button></div></label><button className="admin-primary">Save password</button><button type="button" className="admin-secondary" onClick={()=>setResetTarget(null)}>Cancel</button></form>}</div>
             <div className="admin-actions">
               <button type="button" className="admin-secondary" onClick={()=>resetPassword(user)}>Reset password</button>
               <button type="button" className="admin-secondary" onClick={()=>changeRole(user)}>{user.role==="manager"?"Make staff":"Make manager"}</button>
