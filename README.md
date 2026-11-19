@@ -26,6 +26,20 @@ Reusable, mobile-first restaurant website starter. Each restaurant should receiv
 - Frontend URL: `https://restaurant-menu-site.scan-it500.workers.dev`
 - Admin URL: `https://restaurant-menu-site.scan-it500.workers.dev/admin`
 
+
+## Staff administration and recovery
+
+- Staff sign-in is served at `/admin` (there is no separate public `/staff` login route).
+- Managers can manage accounts at `/admin/staff`; staff-role accounts have read-only menu access.
+- The API enforces manager authorization on all category/product mutations and all staff-management endpoints.
+- New accounts use PBKDF2-SHA256 with 310,000 iterations, a random per-account salt, and must change their temporary password at first sign-in.
+- Password resets revoke all existing sessions for that account. Disabling an account also revokes its sessions.
+- The one-time owner bootstrap endpoint is `POST /api/auth/bootstrap`. It requires the Worker secret `BOOTSTRAP_SECRET`, is rate-limited, and can be consumed only once using the `bootstrap_state` D1 guard.
+- Before deploying the API changes, apply `migrations/0002_staff_management_bootstrap.sql` to the production D1 database, then set `BOOTSTRAP_SECRET` as a Worker secret in Cloudflare. Generate a high-entropy value locally (for example `openssl rand -hex 32`); do not commit it or send it in chat.
+- After deployment, call the bootstrap endpoint once with `X-Bootstrap-Secret` and the intended manager username, display name, and temporary password. The route creates the initial manager and forces a password change. It returns a conflict after the one-time claim is consumed.
+- Remove the `BOOTSTRAP_SECRET` Worker secret in Cloudflare after successful bootstrap. The D1 consumed-state guard remains as a second layer of protection.
+- Do not expose the bootstrap credential in frontend code, query strings, logs, screenshots, or source control.
+
 ## Run locally
 ```bash
 npm install
