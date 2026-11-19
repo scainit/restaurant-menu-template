@@ -113,13 +113,13 @@ export default {
       return json({ error: "A valid username, display name, and 12-128 character password are required" }, 400, headers);
     }
     const salt = randomHex(16);
-    const hash = await passwordHash(password, salt, 310000);
+    const hash = await passwordHash(password, salt, 100000);
     const claim = randomHex(16);
     const now = new Date().toISOString();
     const id = crypto.randomUUID();
     const results = await env.DB.batch([
       env.DB.prepare("UPDATE bootstrap_state SET consumed_at=?,claim_token=? WHERE id='initial-manager' AND consumed_at IS NULL").bind(now, claim),
-      env.DB.prepare("INSERT INTO admin_users(id,restaurant_id,username,display_name,password_hash,password_salt,password_iterations,role,must_change_password,is_active) SELECT ?,?,?,?,?,?,310000,'manager',1,1 WHERE EXISTS (SELECT 1 FROM bootstrap_state WHERE id='initial-manager' AND consumed_at=? AND claim_token=?)").bind(id, RESTAURANT_ID, username, displayName, hash, salt, now, claim)
+      env.DB.prepare("INSERT INTO admin_users(id,restaurant_id,username,display_name,password_hash,password_salt,password_iterations,role,must_change_password,is_active) SELECT ?,?,?,?,?,?,100000,'manager',1,1 WHERE EXISTS (SELECT 1 FROM bootstrap_state WHERE id='initial-manager' AND consumed_at=? AND claim_token=?)").bind(id, RESTAURANT_ID, username, displayName, hash, salt, now, claim)
     ]);
     if (!results?.[1]?.meta?.changes) return json({ error: "Bootstrap has already been used or the account could not be created" }, 409, headers);
     await env.DB.prepare("DELETE FROM login_attempts WHERE ip_hash=?").bind(ipHash).run();
@@ -137,8 +137,8 @@ export default {
    if (path === "/api/auth/change-password" && request.method === "POST") {
     const body = await request.json(); const password = String(body.password || "");
     if (password.length < 12 || password.length > 128) return json({ error: "Password must be 12-128 characters" }, 400, headers);
-    const salt = randomHex(16); const hash = await passwordHash(password, salt, 310000);
-    await env.DB.prepare("UPDATE admin_users SET password_hash=?,password_salt=?,password_iterations=310000,must_change_password=0 WHERE id=? AND restaurant_id=?").bind(hash,salt,user.id,RESTAURANT_ID).run();
+    const salt = randomHex(16); const hash = await passwordHash(password, salt, 100000);
+    await env.DB.prepare("UPDATE admin_users SET password_hash=?,password_salt=?,password_iterations=100000,must_change_password=0 WHERE id=? AND restaurant_id=?").bind(hash,salt,user.id,RESTAURANT_ID).run();
     return json({ ok: true }, 200, headers);
    }
    if (path === "/api/admin/users" && request.method === "GET") {
@@ -156,9 +156,9 @@ export default {
     if (!/^[a-z0-9._-]{3,64}$/.test(username) || !displayName || password.length < 12 || password.length > 128 || !["manager", "staff"].includes(role)) {
       return json({ error: "Enter a valid name, username, role, and 12-128 character password" }, 400, headers);
     }
-    const salt = randomHex(16); const hash = await passwordHash(password, salt, 310000); const id = crypto.randomUUID();
+    const salt = randomHex(16); const hash = await passwordHash(password, salt, 100000); const id = crypto.randomUUID();
     try {
-      await env.DB.prepare("INSERT INTO admin_users(id,restaurant_id,username,display_name,password_hash,password_salt,password_iterations,role,must_change_password,is_active) VALUES(?,?,?,?,?,?,310000,?,1,1)").bind(id,RESTAURANT_ID,username,displayName,hash,salt,role).run();
+      await env.DB.prepare("INSERT INTO admin_users(id,restaurant_id,username,display_name,password_hash,password_salt,password_iterations,role,must_change_password,is_active) VALUES(?,?,?,?,?,?,100000,?,1,1)").bind(id,RESTAURANT_ID,username,displayName,hash,salt,role).run();
     } catch { return json({ error: "Username already exists or account could not be created" }, 409, headers); }
     return json({ id, username, display_name: displayName, role, is_active: true, must_change_password: true }, 201, headers);
    }
@@ -171,9 +171,9 @@ export default {
     if (b.action === "reset-password") {
       const password = String(b.password || "");
       if (password.length < 12 || password.length > 128) return json({ error: "Password must be 12-128 characters" }, 400, headers);
-      const salt = randomHex(16); const hash = await passwordHash(password, salt, 310000);
+      const salt = randomHex(16); const hash = await passwordHash(password, salt, 100000);
       await env.DB.batch([
-        env.DB.prepare("UPDATE admin_users SET password_hash=?,password_salt=?,password_iterations=310000,must_change_password=1 WHERE id=? AND restaurant_id=?").bind(hash,salt,targetId,RESTAURANT_ID),
+        env.DB.prepare("UPDATE admin_users SET password_hash=?,password_salt=?,password_iterations=100000,must_change_password=1 WHERE id=? AND restaurant_id=?").bind(hash,salt,targetId,RESTAURANT_ID),
         env.DB.prepare("DELETE FROM sessions WHERE user_id=? AND restaurant_id=?").bind(targetId,RESTAURANT_ID)
       ]);
       return json({ ok: true, must_change_password: true }, 200, headers);
