@@ -35,6 +35,8 @@ export default function StaffManagementPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<"manager" | "staff">("staff");
+  const [resetTarget, setResetTarget] = useState<string | null>(null);
+  const [resetPasswordValue, setResetPasswordValue] = useState("");
 
   async function loadUsers() {
     const me = await api("/api/auth/me");
@@ -102,20 +104,29 @@ export default function StaffManagementPage() {
     }
   }
 
-  async function resetPassword(user: StaffUser) {
-    const nextPassword = window.prompt("Enter a new temporary password (at least 12 characters) for " + user.username);
-    if (nextPassword === null) return;
-    if (nextPassword.length < 12 || nextPassword.length > 128) {
+  function resetPassword(user: StaffUser) {
+    setResetTarget(user.id);
+    setResetPasswordValue("");
+    setError("");
+    setNotice("");
+  }
+
+  async function submitPasswordReset(e: FormEvent) {
+    e.preventDefault();
+    if (!resetTarget) return;
+    if (resetPasswordValue.length < 12 || resetPasswordValue.length > 128) {
       setError("Password must be 12-128 characters");
       return;
     }
     setError("");
     setNotice("");
     try {
-      await api("/api/admin/users/" + user.id, {
+      await api("/api/admin/users/" + resetTarget, {
         method: "PATCH",
-        body: JSON.stringify({ action: "reset-password", password: nextPassword })
+        body: JSON.stringify({ action: "reset-password", password: resetPasswordValue })
       });
+      setResetTarget(null);
+      setResetPasswordValue("");
       setNotice("Password reset. All existing sessions for this user were revoked.");
       await loadUsers();
     } catch (e) {
@@ -147,7 +158,7 @@ export default function StaffManagementPage() {
         <h2>Staff accounts ({users.length})</h2>
         <ul className="admin-list">
           {users.map(user=><li key={user.id} className="staff-user-row">
-            <div><b>{user.display_name || user.username}</b><small>@{user.username} · {user.role} · {user.is_active ? "Active" : "Disabled"}{user.must_change_password ? " · Password change required" : ""}</small></div>
+            <div><b>{user.display_name || user.username}</b><small>@{user.username} · {user.role} · {user.is_active ? "Active" : "Disabled"}{user.must_change_password ? " · Password change required" : ""}</small>{resetTarget===user.id&&<form className="staff-reset-form" onSubmit={submitPasswordReset}><label>New temporary password<input type="password" value={resetPasswordValue} onChange={e=>setResetPasswordValue(e.target.value)} minLength={12} maxLength={128} autoComplete="new-password" required /></label><button className="admin-primary">Save password</button><button type="button" className="admin-secondary" onClick={()=>setResetTarget(null)}>Cancel</button></form>}</div>
             <div className="admin-actions">
               <button type="button" className="admin-secondary" onClick={()=>resetPassword(user)}>Reset password</button>
               <button type="button" className="admin-secondary" onClick={()=>changeRole(user)}>{user.role==="manager"?"Make staff":"Make manager"}</button>
