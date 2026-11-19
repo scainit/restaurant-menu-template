@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { categories, products, Product } from "@/lib/menu";
 import { restaurant } from "@/lib/config";
 import { ShoppingBag, Plus, Minus, Trash2, MapPin, Phone, Instagram, Star, Globe, X } from "lucide-react";
@@ -8,6 +8,8 @@ export default function Home() {
  const [lang,setLang]=useState<"en"|"ar">("en"),[active,setActive]=useState("popular"),[cart,setCart]=useState<CartLine[]>([]),[cartOpen,setCartOpen]=useState(false),[selected,setSelected]=useState<Record<string,string>>({});
  const ar=lang==="ar", money=(n:number)=>new Intl.NumberFormat(ar?"ar-EG":"en-EG",{style:"currency",currency:restaurant.currency,maximumFractionDigits:0}).format(n);
  const total=useMemo(()=>cart.reduce((s,l)=>s+l.price*l.qty,0),[cart]);
+ useEffect(()=>{try{const saved=localStorage.getItem("restaurant-menu-cart");if(saved)setCart(JSON.parse(saved));}catch{localStorage.removeItem("restaurant-menu-cart");}},[]);
+ useEffect(()=>{try{localStorage.setItem("restaurant-menu-cart",JSON.stringify(cart));}catch{}},[cart]);
  function add(p:Product){const size=p.sizes?.find(s=>s.id===selected[p.id])??p.sizes?.[0],price=size?.price??p.price??0,key=p.id+(size?":"+size.id:"");setCart(old=>{const found=old.find(x=>x.key===key);return found?old.map(x=>x.key===key?{...x,qty:x.qty+1}:x):[...old,{key,product:p,sizeName:ar?size?.nameAr:size?.name,price,qty:1}]})}
  function change(key:string,d:number){setCart(old=>old.map(x=>x.key===key?{...x,qty:x.qty+d}:x).filter(x=>x.qty>0))}
  function checkout(){const lines=cart.map(x=>`• ${ar?x.product.nameAr:x.product.name}${x.sizeName?" ("+x.sizeName+")":""} × ${x.qty} — ${money(x.price*x.qty)}`),msg=(ar?"مرحباً، أريد طلب:\n":"Hello, I'd like to order:\n")+lines.join("\n")+"\n"+(ar?"الإجمالي: ":"Total: ")+money(total);window.open("https://wa.me/"+restaurant.whatsapp+"?text="+encodeURIComponent(msg),"_blank")}
