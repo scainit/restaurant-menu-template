@@ -58,6 +58,9 @@ export default {
   if (request.method === "OPTIONS") return new Response(null, { status: 204, headers });
   const url = new URL(request.url);
   const path = url.pathname;
+  const origin = request.headers.get("Origin") || "";
+  const allowedOrigin = origin === "https://restaurant-menu-site.scan-it500.workers.dev" || origin === "https://restaurant-menu-template.pages.dev" || origin.startsWith("http://localhost:");
+  if (["POST", "PUT", "DELETE"].includes(request.method) && !allowedOrigin) return json({ error: "Origin not allowed" }, 403, headers);
   try {
    if (path === "/health") return json({ ok: true, service: "restaurant-menu-api" }, 200, headers);
    if (path === "/api/menu" && request.method === "GET") {
