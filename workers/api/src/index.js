@@ -49,7 +49,8 @@ async function requireUser(request, env) {
   return row || null;
 }
 function cleanProduct(row) {
-  return { ...row, sizes: row.sizes_json ? JSON.parse(row.sizes_json) : [], sizes_json: undefined, is_available: !!row.is_available };
+  const imageKey = row.image_key || "";
+  return { ...row, image_url: imageKey ? "https://raw.githubusercontent.com/scainit/restaurant-menu-template/main/public/images/menu/" + imageKey + ".svg" : "", sizes: row.sizes_json ? JSON.parse(row.sizes_json) : [], sizes_json: undefined, is_available: !!row.is_available };
 }
 export default {
  async fetch(request, env) {
@@ -123,13 +124,13 @@ export default {
     const b=await request.json(); if(!b.name||!b.name_ar||!b.category_id) return json({error:"Product name and category are required"},400,headers);
     const id=crypto.randomUUID(); const sizes=Array.isArray(b.sizes)&&b.sizes.length?JSON.stringify(b.sizes):null; const price=sizes?null:Number(b.price);
     if(!sizes&&(!Number.isFinite(price)||price<0)) return json({error:"A valid price is required"},400,headers);
-    await env.DB.prepare("INSERT INTO products(id,restaurant_id,category_id,name,name_ar,description,description_ar,price,sizes_json,is_available,sort_order) VALUES(?,?,?,?,?,?,?,?,?,?,?)").bind(id,RESTAURANT_ID,b.category_id,String(b.name).slice(0,120),String(b.name_ar).slice(0,120),String(b.description||"").slice(0,500),String(b.description_ar||"").slice(0,500),price,sizes,b.is_available===false?0:1,Number(b.sort_order)||0).run();
+    await env.DB.prepare("INSERT INTO products(id,restaurant_id,category_id,name,name_ar,description,description_ar,image_key,price,sizes_json,is_available,sort_order) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)").bind(id,RESTAURANT_ID,b.category_id,String(b.name).slice(0,120),String(b.name_ar).slice(0,120),String(b.description||"").slice(0,500),String(b.description_ar||"").slice(0,500),String(b.image_key||"").slice(0,80),price,sizes,b.is_available===false?0:1,Number(b.sort_order)||0).run();
     return json({id},201,headers);
    }
    const productMatch=path.match(/^\/api\/admin\/products\/([^/]+)$/);
    if(productMatch&&request.method==="PUT"){
     const b=await request.json(); const sizes=Array.isArray(b.sizes)&&b.sizes.length?JSON.stringify(b.sizes):null; const price=sizes?null:Number(b.price);
-    await env.DB.prepare("UPDATE products SET category_id=?,name=?,name_ar=?,description=?,description_ar=?,price=?,sizes_json=?,is_available=?,sort_order=?,updated_at=CURRENT_TIMESTAMP WHERE id=? AND restaurant_id=?").bind(b.category_id,String(b.name||"").slice(0,120),String(b.name_ar||"").slice(0,120),String(b.description||"").slice(0,500),String(b.description_ar||"").slice(0,500),price,sizes,b.is_available===false?0:1,Number(b.sort_order)||0,productMatch[1],RESTAURANT_ID).run(); return json({ok:true},200,headers);
+    await env.DB.prepare("UPDATE products SET category_id=?,name=?,name_ar=?,description=?,description_ar=?,image_key=?,price=?,sizes_json=?,is_available=?,sort_order=?,updated_at=CURRENT_TIMESTAMP WHERE id=? AND restaurant_id=?").bind(b.category_id,String(b.name||"").slice(0,120),String(b.name_ar||"").slice(0,120),String(b.description||"").slice(0,500),String(b.description_ar||"").slice(0,500),String(b.image_key||"").slice(0,80),price,sizes,b.is_available===false?0:1,Number(b.sort_order)||0,productMatch[1],RESTAURANT_ID).run(); return json({ok:true},200,headers);
    }
    if(productMatch&&request.method==="DELETE"){await env.DB.prepare("DELETE FROM products WHERE id=? AND restaurant_id=?").bind(productMatch[1],RESTAURANT_ID).run();return json({ok:true},200,headers);}
    return json({error:"Not found"},404,headers);
