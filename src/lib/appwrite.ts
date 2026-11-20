@@ -92,6 +92,9 @@ export async function api(path: string, options: RequestInit = {}) {
     const d = await callMenuApi("admin.categories.create", { name: body.name, nameAr: body.name_ar });
     return { category: mapCategory(d.category) };
   }
+  if (path.startsWith("/api/admin/categories/") && method === "DELETE") {
+    return callMenuApi("admin.categories.delete", { id: path.split("/").pop() || "" });
+  }
   if (path === "/api/admin/products" && method === "GET") {
     const d = await callMenuApi("admin.products.list");
     return { products: (d.products || []).map(mapProduct) };
