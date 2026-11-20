@@ -139,3 +139,17 @@
 .cart-fab{bottom:14px;right:14px;border-radius:10px;padding:12px 15px}
 .cart{padding:18px}
 @media(max-width:650px){.hero{padding:30px 14px 24px}.menu-section{padding:30px 12px 90px}.products{grid-template-columns:1fr}.product{grid-template-columns:96px 1fr;min-height:120px}.section-heading h2{font-size:25px}}
+
+
+/* Restore Bistro House warm brand palette on the simplified landing page */
+.landing-page{background:var(--bg)}
+.landing-kicker{color:var(--accent)}
+.landing-main h1{color:var(--ink)}
+.landing-action{border-color:var(--line);background:#fff;color:var(--ink)}
+.landing-action-primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.landing-action-primary:hover{background:#a95834;border-color:#a95834}
+.landing-action-disabled{background:#f3e8df;border-color:#e9d7c8;color:#8e6a55}
+.landing-contact h2{color:var(--ink)}
+.landing-branch{background:#fff;border-color:var(--line)}
+.landing-branch>a{color:var(--accent)}
+.landing-footer{background:var(--ink);color:#b9b0a6}
