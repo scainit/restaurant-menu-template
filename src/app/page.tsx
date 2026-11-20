@@ -2,8 +2,8 @@ import Link from "next/link";
 import { Phone, Wallet, MessageCircle } from "lucide-react";
 
 const branches = [
-  { name: "Mokattam Branch", arabic: "فرع المقطم", phone: "01070845123", href: "tel:+201070845123" },
-  { name: "Maadi Branch", arabic: "فرع المعادي", phone: "01005607986", href: "tel:+201005607986" },
+  { name: "Mokattam Branch", arabic: "فرع المقطم", phone: "01070845123", href: "tel:+201070845123", whatsapp: "201070845123" },
+  { name: "Maadi Branch", arabic: "فرع المعادي", phone: "01005607986", href: "tel:+201005607986", whatsapp: "201005607986" },
 ];
 
 export default function Home() {
@@ -35,7 +35,7 @@ export default function Home() {
                 <a href={branch.href} aria-label={`Call ${branch.name}`}>
                   <Phone size={16} /> Call this branch
                 </a>
-                <a href={`https://wa.me/${branch.phone === "01070845123" ? "201070845123" : "201005607986"}`} target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp ${branch.name}`}>
+                <a href={`https://wa.me/${branch.whatsapp}`} target="_blank" rel="noopener noreferrer" aria-label={`WhatsApp ${branch.name}`}>
                   <MessageCircle size={16} /> WhatsApp
                 </a>
               </div>
