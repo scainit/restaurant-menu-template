@@ -186,6 +186,15 @@ async function handle(req, res) {
         const row = await createRow(tables.categories, { name, nameAr, sortOrder: Number(input.sortOrder || 0), active: true });
         return json(res, { category: { id: row.$id, ...row.data } }, 201, origin);
       }
+      if (action === "admin.categories.delete") {
+        const id = String(input.id || "").trim();
+        if (!id) return json(res, { error: "Category ID is required." }, 400, origin);
+        const category = await getRow(tables.categories, id);
+        const products = await listRows(tables.products, { method: "equal", attribute: "categoryId", values: [id] });
+        if (products.length) return json(res, { error: "This category still contains products. Move or delete its products first." }, 409, origin);
+        await deleteRow(tables.categories, id);
+        return json(res, { success: true }, 200, origin);
+      }
       if (action === "admin.products.list") {
         const rows = await listRows(tables.products);
         return json(res, { products: rows.map(r => ({ id: r.$id, ...r.data, sizes: parseJson(r.data.sizes, []) })) }, 200, origin);
