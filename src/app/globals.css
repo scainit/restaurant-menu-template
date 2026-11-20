@@ -46,3 +46,22 @@
 .staff-admin-theme .staff-user-row{border-color:var(--staff-line)}
 .staff-admin-theme .admin-success{background:#eaf3ff;color:#174f96;border-color:#c8ddfb}
 .staff-admin-theme .admin-top h1{color:#123c70}
+
+/* Branch selection checkout */
+.branch-title{display:flex;align-items:center;gap:10px}
+.branch-title h2{margin:0}
+.back-step{border:0;background:#f5f1ec;border-radius:9px;padding:8px;display:grid;place-items:center}
+.branch-step{padding-top:14px}
+.branch-hint{font-size:13px;color:var(--muted);margin:0 0 16px}
+.branch-option{width:100%;display:flex;align-items:center;gap:12px;text-align:start;border:1px solid var(--line);background:#fff;border-radius:14px;padding:15px;margin:0 0 11px;color:var(--ink);transition:border-color .15s,background .15s}
+.branch-option.selected{border-color:var(--accent);background:#fbf5f0;box-shadow:0 0 0 2px #bd6b4320}
+.branch-icon{width:42px;height:42px;display:grid;place-items:center;background:#f5ece4;color:var(--accent);border-radius:12px;flex:none}
+.branch-copy{display:grid;gap:5px;flex:1}
+.branch-copy b{font-size:14px}
+.branch-copy small{font-size:12px;color:var(--muted);text-align:start}
+.branch-check{width:24px;height:24px;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;color:#fff}
+.branch-option.selected .branch-check{background:var(--accent);border-color:var(--accent)}
+.branch-total{display:flex;justify-content:space-between;align-items:center;padding:18px 0 10px;border-top:1px solid var(--line);margin-top:16px}
+.delivery-note{font-size:12px;line-height:1.7;color:var(--muted);background:#f8f5f0;border-radius:10px;padding:12px;margin:0 0 14px}
+.checkout:disabled{opacity:.45;cursor:not-allowed}
+.checkout svg{margin-inline-start:8px}
