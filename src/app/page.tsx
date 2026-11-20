@@ -14,6 +14,8 @@ export default function Home() {
         <h1>Bistro House</h1>
         <nav className="landing-actions" aria-label="Main links">
           <Link className="landing-action landing-action-primary" href="/menu">Menu</Link>
+          <a className="landing-action" href="https://search.google.com/local/writereview?placeid=ChIJ570n72s5WBQRuDVDWE0VLA0" target="_blank" rel="noopener noreferrer">قيّم فرعنا في المقطم</a>
+          <a className="landing-action" href="https://maps.app.goo.gl/iYDLdsqpLvorw8EE8" target="_blank" rel="noopener noreferrer">زرنا في فرع المقطم</a>
           <a className="landing-action" href="#contact">Contact</a>
           <button className="landing-action landing-action-disabled" type="button" disabled>
             <Wallet size={17} /> InstaPay
