@@ -1,44 +1,48 @@
-"use client";
-import { useEffect, useMemo, useState } from "react";
-import { categories, products, Product } from "@/lib/menu";
-import { restaurant } from "@/lib/config";
-import { api } from "@/lib/appwrite";
-import { ShoppingBag, Plus, Minus, Trash2, MapPin, Phone, Instagram, Star, Globe, X, ArrowLeft, ArrowRight, Check } from "lucide-react";
-type CartLine = { key:string; product:Product; sizeName?:string; price:number; qty:number };
-type Branch = "mokattam" | "maadi";
-const branches: Record<Branch,{name:string;nameEn:string;whatsapp:string}> = {
- mokattam:{name:"فرع المقطم",nameEn:"Mokattam Branch",whatsapp:"201070845123"},
- maadi:{name:"فرع المعادي",nameEn:"Maadi Branch",whatsapp:"201005607986"}
-};
+import Link from "next/link";
+import { Phone, Menu, Wallet } from "lucide-react";
+
+const branches = [
+  { name: "Mokattam Branch", arabic: "فرع المقطم", phone: "01070845123", href: "tel:+201070845123" },
+  { name: "Maadi Branch", arabic: "فرع المعادي", phone: "01005607986", href: "tel:+201005607986" },
+];
+
 export default function Home() {
- const [lang,setLang]=useState<"en"|"ar">("en"),[active,setActive]=useState("popular"),[cart,setCart]=useState<CartLine[]>([]),[cartOpen,setCartOpen]=useState(false),[selected,setSelected]=useState<Record<string,string>>({});
- const [checkoutStep,setCheckoutStep]=useState<"cart"|"branch">("cart"),[selectedBranch,setSelectedBranch]=useState<Branch|null>(null);
- const [menuCategories,setMenuCategories]=useState(categories),[menuProducts,setMenuProducts]=useState(products);
- useEffect(()=>{api("/api/menu").then((data:any)=>{if(!data)return;if(Array.isArray(data.categories)&&data.categories.length)setMenuCategories(data.categories.map((c:any)=>({id:c.id,name:c.name,nameAr:c.name_ar})));if(Array.isArray(data.products))setMenuProducts(data.products.map((p:any)=>({id:p.id,categoryId:p.category_id,name:p.name,nameAr:p.name_ar,description:p.description,descriptionAr:p.description_ar,image:p.image_url||"",price:p.price,sizes:p.sizes?.map((s:any)=>({id:s.id,name:s.name,nameAr:s.nameAr,price:Number(s.price)})),available:!!p.is_available})));}).catch(()=>{});},[]);
- const ar=lang==="ar", money=(n:number)=>new Intl.NumberFormat(ar?"ar-EG":"en-EG",{style:"currency",currency:restaurant.currency,minimumFractionDigits:0,maximumFractionDigits:2}).format(n);
- const total=useMemo(()=>cart.reduce((s,l)=>s+l.price*l.qty,0),[cart]);
- useEffect(()=>{try{const saved=localStorage.getItem("restaurant-menu-cart");if(saved)setCart(JSON.parse(saved));}catch{localStorage.removeItem("restaurant-menu-cart");}},[]);
- useEffect(()=>{try{localStorage.setItem("restaurant-menu-cart",JSON.stringify(cart));}catch{}},[cart]);
- function add(p:Product){const size=p.sizes?.find(s=>s.id===selected[p.id])??p.sizes?.[0],price=size?.price??p.price??0,key=p.id+(size?":"+size.id:"");setCart(old=>{const found=old.find(x=>x.key===key);return found?old.map(x=>x.key===key?{...x,qty:x.qty+1}:x):[...old,{key,product:p,sizeName:ar?size?.nameAr:size?.name,price,qty:1}]})}
- function change(key:string,d:number){setCart(old=>old.map(x=>x.key===key?{...x,qty:x.qty+d}:x).filter(x=>x.qty>0))}
- function openBranchStep(){if(cart.length){setCheckoutStep("branch");setSelectedBranch(null)}}
- function backToCart(){setCheckoutStep("cart");setSelectedBranch(null)}
- function checkout(){if(!selectedBranch||!cart.length)return;const branch=branches[selectedBranch];const lines=cart.map((x,i)=>`${i+1}) ${ar?x.product.nameAr:x.product.name}${x.sizeName?" ("+x.sizeName+")":""} × ${x.qty} = ${money(x.price*x.qty)}`);
- const msg=ar
- ? `🛍️ *طلب جديد*\n━━━━━━━━━━━━━━━━━━\n🏪 *الفرع:* ${branch.name}\n\n🍽️ *تفاصيل الطلب*\n${lines.join("\n")}\n\n━━━━━━━━━━━━━━━━━━\n💰 *إجمالي المنتجات: ${money(total)}*\n🚚 *التوصيل:* سيتم تحديد سعر التوصيل وإبلاغ العميل به بالجنيه المصري.\n\nشكراً لثقتكم ❤️`
- : `🛍️ *NEW ORDER*\n━━━━━━━━━━━━━━━━━━\n🏪 *Branch:* ${branch.nameEn}\n\n🍽️ *ORDER DETAILS*\n${lines.join("\n")}\n\n━━━━━━━━━━━━━━━━━━\n💰 *Products total: ${money(total)}*\n🚚 *Delivery fee:* To be determined and communicated to the customer in EGP.\n\nThank you for your order ❤️`;
- window.open("https://wa.me/"+branch.whatsapp+"?text="+encodeURIComponent(msg),"_blank");}
- const visible=menuProducts.filter(p=>p.categoryId===active&&p.available);
- return <main dir={ar?"rtl":"ltr"}>
- <header className="topbar"><div className="brand"><div className="logo">{restaurant.logo?<img src={restaurant.logo} alt="logo"/>:"B"}</div><div><b>{ar?restaurant.nameAr:restaurant.name}</b><small>{restaurant.tagline}</small></div></div><button className="lang" onClick={()=>setLang(ar?"en":"ar")}><Globe size={16}/>{ar?"English":"العربية"}</button></header>
- <section className="hero"><span className="eyebrow">{ar?"أهلاً بيك":"WELCOME TO"}</span><h1>{ar?restaurant.nameAr:restaurant.name}</h1><p>{ar?"أكل طازة ومذاق يستاهل التجربة":restaurant.tagline}</p><a className="primary" href="#menu">{ar?"شوف المنيو":"Explore menu"}</a></section>
- <nav className="quicklinks">{restaurant.phone&&<a href={"tel:"+restaurant.phone}><Phone size={17}/>{ar?"اتصل بنا":"Call"}</a>}{restaurant.mapsUrl&&<a href={restaurant.mapsUrl} target="_blank"><MapPin size={17}/>{ar?"الموقع":"Location"}</a>}{restaurant.reviewUrl&&<a href={restaurant.reviewUrl} target="_blank"><Star size={17}/>{ar?"قيّمنا":"Review us"}</a>}{restaurant.instagram&&<a href={restaurant.instagram} target="_blank"><Instagram size={17}/>Instagram</a>}{restaurant.instapay&&<a href={restaurant.instapay} target="_blank">InstaPay</a>}</nav>
- <section id="menu" className="menu-section"><div className="section-heading"><span className="eyebrow">{ar?"اختار اللي تحبه":"MADE FOR YOU"}</span><h2>{ar?"قائمة الطعام":"Our Menu"}</h2></div><div className="categories">{menuCategories.map(c=><button key={c.id} className={active===c.id?"category active":"category"} onClick={()=>setActive(c.id)}>{ar?c.nameAr:c.name}</button>)}</div><div className="products">{visible.map(p=><article className="product" key={p.id}><div className="product-image">{p.image?<img src={p.image} alt={p.name}/>:<span>✦</span>}</div><div className="product-info"><h3>{ar?p.nameAr:p.name}</h3><p>{ar?(p.descriptionAr||""):p.description}</p>{(p.sizes?.length ?? 0)>0&&<select aria-label="Choose size" value={selected[p.id]??(p.sizes?.[0]?.id ?? "")} onChange={e=>setSelected({...selected,[p.id]:e.target.value})}> {p.sizes?.map(s=><option key={s.id} value={s.id}>{ar?s.nameAr:s.name} · {money(s.price)}</option>)}</select>}<div className="product-bottom"><b>{money(p.sizes?.find(s=>s.id===(selected[p.id]??(p.sizes?.[0]?.id ?? "")))?.price??p.price??0)}</b><button className="add" onClick={()=>add(p)}><Plus size={17}/>{ar?"أضف":"Add"}</button></div></div></article>)}</div></section>
- <footer><b>{ar?restaurant.nameAr:restaurant.name}</b><span>{restaurant.address}</span><small>© {new Date().getFullYear()} {restaurant.name}</small></footer>
- <button className="cart-fab" onClick={()=>{setCartOpen(true);setCheckoutStep("cart")}}><ShoppingBag size={19}/>{ar?"السلة":"Cart"} <span>{cart.reduce((s,x)=>s+x.qty,0)}</span></button>
- {cartOpen&&<div className="overlay" onClick={()=>{setCartOpen(false);setCheckoutStep("cart")}}><aside className="cart" onClick={e=>e.stopPropagation()}>
- <div className="cart-head">{checkoutStep==="cart"?<h2>{ar?"سلة الطلبات":"Your order"}</h2>:<div className="branch-title"><button className="back-step" onClick={backToCart} aria-label={ar?"رجوع":"Back"}>{ar?<ArrowRight size={19}/>:<ArrowLeft size={19}/>}</button><h2>{ar?"اختار الفرع":"Choose branch"}</h2></div>}<button onClick={()=>{setCartOpen(false);setCheckoutStep("cart")}} aria-label="Close"><X/></button></div>
- {checkoutStep==="cart"?<>{cart.length===0?<p className="empty">{ar?"السلة فارغة":"Your cart is empty."}</p>:<>{cart.map(x=><div className="cart-line" key={x.key}><div><b>{ar?x.product.nameAr:x.product.name}</b><small>{x.sizeName} · {money(x.price)}</small><strong>{money(x.price*x.qty)}</strong></div><div className="qty"><button onClick={()=>change(x.key,-1)}><Minus size={14}/></button><span>{x.qty}</span><button onClick={()=>change(x.key,1)}><Plus size={14}/></button><button onClick={()=>setCart(old=>old.filter(y=>y.key!==x.key))}><Trash2 size={14}/></button></div></div>)}<div className="total"><span>{ar?"إجمالي المنتجات":"Products total"}</span><b>{money(total)}</b></div><button className="checkout" onClick={openBranchStep}>{ar?"التالي":"Next"} <ArrowRight size={17}/></button></>}</>:<div className="branch-step"><p className="branch-hint">{ar?"اختار الفرع اللي تحب تستلم منه طلبك على واتساب":"Select the branch for your WhatsApp order."}</p><button className={selectedBranch==="mokattam"?"branch-option selected":"branch-option"} onClick={()=>setSelectedBranch("mokattam")}><span className="branch-icon"><MapPin size={20}/></span><span className="branch-copy"><b>{ar?"فرع المقطم":"Mokattam Branch"}</b><small dir="ltr">01070845123</small></span><span className="branch-check">{selectedBranch==="mokattam"&&<Check size={17}/>}</span></button><button className={selectedBranch==="maadi"?"branch-option selected":"branch-option"} onClick={()=>setSelectedBranch("maadi")}><span className="branch-icon"><MapPin size={20}/></span><span className="branch-copy"><b>{ar?"فرع المعادي":"Maadi Branch"}</b><small dir="ltr">01005607986</small></span><span className="branch-check">{selectedBranch==="maadi"&&<Check size={17}/>}</span></button><div className="branch-total"><span>{ar?"إجمالي المنتجات":"Products total"}</span><b>{money(total)}</b></div><p className="delivery-note">{ar?"سيتم تحديد سعر التوصيل وإبلاغك به بالجنيه المصري.":"Delivery fee will be determined and communicated to you in EGP."}</p><button className="checkout" disabled={!selectedBranch} onClick={checkout}>{ar?"تأكيد وإرسال الطلب على واتساب":"Confirm & send on WhatsApp"}</button></div>}
- </aside></div>}
- </main>;
+  return (
+    <main className="landing-page">
+      <header className="landing-header">
+        <Link className="landing-brand" href="/">BISTRO HOUSE</Link>
+        <Link className="landing-menu-link" href="/menu"><Menu size={17} /> Menu</Link>
+      </header>
+
+      <section className="landing-hero">
+        <span className="landing-kicker">WELCOME TO</span>
+        <h1>Bistro House</h1>
+        <p>Good food. Great moments.</p>
+        <Link className="landing-menu-button" href="/menu">Explore Menu <Menu size={18} /></Link>
+      </section>
+
+      <section className="landing-content">
+        <div className="landing-section-title">
+          <span>CONTACT US</span>
+          <h2>Our Branches</h2>
+        </div>
+        <div className="landing-branches">
+          {branches.map((branch) => (
+            <article className="landing-branch" key={branch.phone}>
+              <h3>{branch.name}</h3>
+              <p>{branch.arabic}</p>
+              <a className="landing-phone" href={branch.href}><Phone size={17} /> {branch.phone}</a>
+              <a className="landing-branch-button" href={branch.href}>Call Branch</a>
+            </article>
+          ))}
+        </div>
+        <div className="landing-payment">
+          <Wallet size={22} />
+          <div><h3>InstaPay</h3><p>Pay securely through InstaPay</p></div>
+          <button type="button" disabled aria-label="InstaPay link will be added later">InstaPay</button>
+        </div>
+      </section>
+      <footer className="landing-footer">© {new Date().getFullYear()} Bistro House</footer>
+    </main>
+  );
 }
