@@ -9,7 +9,7 @@ export default function Home() {
  const [lang,setLang]=useState<"en"|"ar">("en"),[active,setActive]=useState("popular"),[cart,setCart]=useState<CartLine[]>([]),[cartOpen,setCartOpen]=useState(false),[selected,setSelected]=useState<Record<string,string>>({});
  const [menuCategories,setMenuCategories]=useState(categories),[menuProducts,setMenuProducts]=useState(products);
  useEffect(()=>{api("/api/menu").then((data:any)=>{if(!data)return;if(Array.isArray(data.categories)&&data.categories.length)setMenuCategories(data.categories.map((c:any)=>({id:c.id,name:c.name,nameAr:c.name_ar})));if(Array.isArray(data.products))setMenuProducts(data.products.map((p:any)=>({id:p.id,categoryId:p.category_id,name:p.name,nameAr:p.name_ar,description:p.description,descriptionAr:p.description_ar,image:p.image_url||"",price:p.price,sizes:p.sizes?.map((s:any)=>({id:s.id,name:s.name,nameAr:s.nameAr,price:Number(s.price)})),available:!!p.is_available})));}).catch(()=>{});},[]);
- const ar=lang==="ar", money=(n:number)=>new Intl.NumberFormat(ar?"ar-EG":"en-EG",{style:"currency",currency:restaurant.currency,maximumFractionDigits:0}).format(n);
+ const ar=lang==="ar", money=(n:number)=>new Intl.NumberFormat(ar?"ar-EG":"en-EG",{style:"currency",currency:restaurant.currency,minimumFractionDigits:0,maximumFractionDigits:2}).format(n);
  const total=useMemo(()=>cart.reduce((s,l)=>s+l.price*l.qty,0),[cart]);
  useEffect(()=>{try{const saved=localStorage.getItem("restaurant-menu-cart");if(saved)setCart(JSON.parse(saved));}catch{localStorage.removeItem("restaurant-menu-cart");}},[]);
  useEffect(()=>{try{localStorage.setItem("restaurant-menu-cart",JSON.stringify(cart));}catch{}},[cart]);
