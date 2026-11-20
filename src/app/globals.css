@@ -65,3 +65,33 @@
 .delivery-note{font-size:12px;line-height:1.7;color:var(--muted);background:#f8f5f0;border-radius:10px;padding:12px;margin:0 0 14px}
 .checkout:disabled{opacity:.45;cursor:not-allowed}
 .checkout svg{margin-inline-start:8px}
+
+
+/* Bistro House landing page */
+.landing-page{min-height:100vh;background:var(--bg)}
+.landing-header{height:76px;padding:0 max(5vw,20px);display:flex;align-items:center;justify-content:space-between;background:#fff;border-bottom:1px solid var(--line)}
+.landing-brand{font-size:15px;font-weight:800;letter-spacing:2px}
+.landing-menu-link,.landing-menu-button{display:inline-flex;align-items:center;justify-content:center;gap:9px;border-radius:30px;font-weight:700}
+.landing-menu-link{padding:11px 18px;background:var(--ink);color:#fff}
+.landing-hero{text-align:center;padding:105px 20px 95px;background:radial-gradient(ellipse at top,#f0dfd0 0,transparent 65%)}
+.landing-kicker,.landing-section-title>span{font-size:10px;letter-spacing:2px;color:var(--accent);font-weight:800}
+.landing-hero h1{font-size:clamp(42px,8vw,76px);letter-spacing:-2px;margin:15px 0 8px}
+.landing-hero p{color:var(--muted);margin:0 0 30px}
+.landing-menu-button{padding:14px 24px;background:var(--accent);color:#fff}
+.landing-content{max-width:900px;margin:0 auto;padding:65px 22px 90px}
+.landing-section-title{text-align:center;margin-bottom:28px}
+.landing-section-title h2{font-size:32px;margin:8px 0}
+.landing-branches{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.landing-branch{background:#fff;border:1px solid var(--line);border-radius:18px;padding:26px;text-align:center}
+.landing-branch h3{margin:0 0 6px;font-size:19px}
+.landing-branch p{margin:0 0 18px;color:var(--muted);font-size:14px}
+.landing-phone{display:flex;justify-content:center;align-items:center;gap:9px;font-weight:700;font-size:17px;margin-bottom:18px}
+.landing-branch-button{display:flex;justify-content:center;background:#f3e8df;color:#8e4b2e;padding:12px 18px;border-radius:25px;font-weight:700}
+.landing-payment{margin-top:20px;padding:20px 22px;background:#fff;border:1px solid var(--line);border-radius:16px;display:flex;align-items:center;gap:14px}
+.landing-payment>svg{color:var(--accent);flex:none}
+.landing-payment>div{flex:1}
+.landing-payment h3{margin:0 0 4px;font-size:16px}
+.landing-payment p{margin:0;color:var(--muted);font-size:12px}
+.landing-payment button{border:0;border-radius:24px;background:#eee9e3;color:#8a8178;padding:11px 18px;font-weight:700;cursor:not-allowed}
+.landing-footer{text-align:center;padding:24px;background:var(--ink);color:#b9b0a6;font-size:12px}
+@media(max-width:600px){.landing-hero{padding:78px 18px 70px}.landing-branches{grid-template-columns:1fr}.landing-content{padding:48px 15px 70px}.landing-payment{align-items:flex-start;flex-wrap:wrap}.landing-payment button{margin-left:auto}}
