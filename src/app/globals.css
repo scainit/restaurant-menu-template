@@ -153,3 +153,23 @@
 .landing-branch{background:#fff;border-color:var(--line)}
 .landing-branch-actions>a{color:var(--accent)}
 .landing-footer{background:var(--ink);color:#b9b0a6}
+
+/* Instant, stable product search */
+.product-search-panel{scroll-margin-top:20px}
+.product-search-heading{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.product-search-heading h2{display:flex;align-items:center;gap:10px;margin:5px 0 0}
+.product-count{font-size:12px;font-weight:600;color:var(--muted);background:#f5f1ec;border-radius:20px;padding:5px 9px}
+.product-search-form{height:54px;display:flex;align-items:center;gap:11px;padding:0 14px;border:1px solid #ded7ce;border-radius:13px;background:#fff;transition:border-color .16s,box-shadow .16s}
+.product-search-form:focus-within{border-color:var(--accent);box-shadow:0 0 0 4px #bd6b4318}
+.product-search-icon{font-size:27px;line-height:1;color:#8a8178;transform:rotate(-20deg)}
+.product-search-form input{flex:1;min-width:0;height:100%;border:0!important;outline:0!important;box-shadow:none!important;background:transparent!important;padding:0!important;font-size:15px!important;color:var(--ink)}
+.product-search-form input::placeholder{color:#a49b91}
+.product-search-form kbd{font-size:9px;letter-spacing:1px;font-weight:800;color:#8e4b2e;background:#f7eee7;border-radius:5px;padding:5px 7px}
+.product-search-clear{width:27px;height:27px;border:0;border-radius:50%;background:#f1ece6;color:#62594f;font-size:19px;line-height:1}
+.product-search-hint{margin:9px 2px 13px;color:var(--muted);font-size:11px}
+.product-search-copy{min-width:0}
+.product-search-empty{display:grid;justify-items:center;gap:8px;padding:30px 12px;text-align:center;color:var(--muted)}
+.product-search-empty b{color:var(--ink)}
+.product-search-empty span{font-size:12px}
+.product-search-empty button{margin-top:5px}
+@media(max-width:520px){.product-search-form{height:50px;padding:0 11px}.product-search-form input{font-size:14px!important}.product-search-form kbd{display:none}.product-search-panel{padding:18px}}
